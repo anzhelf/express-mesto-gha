@@ -22,8 +22,8 @@ app.use('/users', users);
 //соединяемся с базой
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true
-}, ()=> {
-   console.log('Connected to MongoDb');
+}, () => {
+  console.log('Connected to MongoDb');
 
   // Слушаем порт, подключаем апи
   app.listen(PORT, (error) => {
