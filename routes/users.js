@@ -1,16 +1,17 @@
-//директория routes/ содержит описание
-// основных роутов для пользователя и карточки.
+const users = require('express').Router();
+const { getUsers, createUser, getUser, updateUser, updateAvatar } = require('../controllers/users');
 
-//создадим новый роутер
 
-const router = require('express').Router();
-const { getUsers, getUser, createUsers} = require('../controllers/users');
+users.get('/', getUsers); //возвращает всех пользователей
 
-//положить пути и методы работы с ними
-//получить всех пользователей
-router.get('/', getUsers);
-//создать пользователя
-router.post('/', createUsers);
-router.get('/:id', getUser);
+//В теле POST-запроса на создание пользователя
+//передайте JSON-объект
+//с тремя полями: name, about и avatar.
+users.post('/', createUser); //создаёт пользователя
+users.get('/:usersId', getUser); //возвращает пользователя по _id
 
-module.exports = router;
+
+users.patch('/me', updateUser);//обновляет профиль
+users.patch('/me/avatar', updateAvatar);//обновляет аватар
+
+module.exports = users;

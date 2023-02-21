@@ -1,61 +1,32 @@
 //app.js включает основную логику сервера,
 // запуск и подключение к базе данных;
-
-//Подключаем пакеты:
+//подключаем пакеты
 const express = require('express');
 const mongoose = require('mongoose');
 const patch = require('path');
 const bodyParser = require('body-parser');
-const router = require('./routes/users');
+const users = require('./routes/users');
+const cards = require('./routes/cards');
 
-//константа с портом
 const PORT = 3000;
 
-//const createPatch = (page) => patch.resolve(__dirname, 'public', `${page}.html`)
-
-//создаем сервер
+//создали сервер
 const app = express();
 
-//запросс через мидлвары чтоб получить статику - нет тут
-//обрабатывает главную стр
-app.use(express.static(patch.join(__dirname, 'public')));
-
+//мидлвары для статики
+//app.use(express.static(patch.join(__dirname, 'public')));
 app.use(bodyParser.json());
-//остальные запросы
-app.use('/users', router);
 
+app.use('/users', users);
 
-//app.use(routes);
+//соединяемся с базой
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
+  useNewUrlParser: true
+}, ()=> {
+   console.log('Connected to MongoDb');
 
-//app.use('/users', router);
-
-
-//запускаем сервер
-//порт, колбек - что происходит ответ
-//будет вызываться при каждом входящем запросе,
-// пришедшем на 3000 порт
-app.listen(PORT, (error)=> {
-    error ? console.log(error) : console.log(`Приложение слушает на порту ${PORT}!`);
+  // Слушаем порт, подключаем апи
+  app.listen(PORT, (error) => {
+    error ? console.log(error) : console.log(`App listening on port ${PORT}`);
+  });
 });
-
-//routs
-// app.get('/', (req, res) => {
-//     res.sendFile(createPatch('home'));
-// });
-//
-// app.get('/contacts', (req, res) => {
-//     res.sendFile(createPatch('contacts'));
-// });
-//
-// //миделвар перехватывает запросы - остальные пути - выкидывает ошибку
-// app.use((req, res) => {
-//     res
-//         .status(404)
-//         .sendFile(createPatch('error'));
-// });
-
-//Он умеет проверять токены
-// регистрировать и авторизовывать пользователей,
-// сохранять и отдавать карточки,
-// запоминать, когда кто-то поставил лайк или передумал и убрал его.
-//удалять
