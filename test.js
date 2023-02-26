@@ -13,7 +13,7 @@ const animals = data.map(function (item) {
   return item.name;
 });
 
-console.log(animals);
+//console.log(animals);
 
 function f() {
   console.log(this.success);
@@ -23,7 +23,7 @@ const dat = { success: 'Успех - он тут!' };
 
 f = f.bind(dat)
 
-f();
+//f();
 
 
 
@@ -33,6 +33,27 @@ fetch(URL)
   .then((res) => {
     return res.json();
   })
-.then((data) => {
-  console.log(data.results);
-})
+  .then((data) => {
+    //console.log(data.results);
+  })
+
+/**
+Напишите функцию, которая найдет все наборы анаграмм в строке.
+Анаграммы - слова, составленные из одного и того же набора букв (рост-сорт-трос)
+*/
+
+const str = 'адрес карп кума куст мир мука парк рим среда стук рост сорт трос';
+
+function getAnagrams(str) {
+
+}
+
+[
+  ["адрес", "среда"],
+  ["карп", "парк"],
+  ["кума", "мука"],
+  ["куст", "стук"],
+  ["мир", "рим"],
+  ["рост", "сорт", "трос"]
+];
+

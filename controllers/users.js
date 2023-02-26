@@ -12,27 +12,35 @@ const getUsers = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    await User.create(req.body);
+    const user = req.body;
+    await User.create(user);
     return res.status(201).json(user);
 
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ message: 'Произошла ошибка' });
+    return res.status(500).json({ message: 'Произошла ошибка при попытке создать пользователя' });
   }
 };
 
-const getUser = async (req, res) => {
-  try {
-    const { usersId } = req.params;
-    const user = await User.findById(usersId);
-    console.log(user);
-    if (user === null) {
-      return res.status(404).json({ message: 'User not found' })
-    }
-  } catch (e) {
-    console.log(e);
-    return res.status(500).json(users);
-  }
+const getUser = (req, res) => {
+  const data = res.send(req);
+  console.log(req);
+  return data;
+
+
+  // try {
+  //   console.log('консоль', req);
+  //   const { usersId } = req.params;
+  //   const user = await User.findById(usersId);
+
+  //   return req;
+  //   // if (user === null) {
+  //   //   return res.status(404).json({ message: 'Пользователь не найден' })
+  //   // }
+  // } catch (e) {
+  //   console.log(e);
+  //   return res.status(500).json(users);
+  // }
 };
 
 const updateUser = (req, res) => {
