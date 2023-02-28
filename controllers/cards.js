@@ -13,7 +13,7 @@ const getCards = async (req, res) => {
 const createCard = async (req, res) => {
   try {
     //const owner = req.user._id;
-    const owner = '63fd4fba0143b12aaac47720';
+    const owner = '63fd6f38cf3cded2dedfc614';
     const { name, link } = req.body;
     //console.log('AAAAAA', owner);
     await Card.create({ name, link, owner });
@@ -33,7 +33,7 @@ const deleteCard = async (req, res) => {
   try {
     const { cardId } = req.params;
     const card = await Card.findById(cardId);
-    const admin = '63fd4fba0143b12aaac47720';
+    const admin = '63fd6f38cf3cded2dedfc614';
 
     if (card === null) {
       return res.status(404).send({ message: `Карточка ${cardId} не найдена.` });

@@ -44,23 +44,52 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const { usersId } = req.params;
-    const user = await User.findById(usersId);
-    //!user
+    //const { usersId } = req.params;
+    const userId = '63fd6f38cf3cded2dedfc614';
+    const user = await User.findById(userId);
+
     if (user === null) {
       return res.status(404).json({ message: `Пользователь по указанному _id: ${usersId} не найден.` });
     }
 
-    return res.status(200).json(user);
+    await User.findByIdAndUpdate(userId, req.body);
+    return res.status(200).json(req.body);
 
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ message: 'Произошла ошибка' });
+    if (e.name === 'ValidationError') {
+      console.error(e);
+      return res.status(400).send({ message: 'Переданы некорректные данные для изменения информации.' });
+    } else {
+      console.error(e);
+      return res.status(500).send({ message: 'Произошла ошибка при попытке изменить данные пользователя.' });
+    }
   }
 };
 
-const updateAvatar = (req, res) => {
-  return res.status(200).send({});
+const updateAvatar = async (req, res) => {
+  try {
+    //const { usersId } = req.params;
+    const userId = '63fd6f38cf3cded2dedfc614';
+    const user = await User.findById(userId);
+
+    if (user === null) {
+      return res.status(404).json({ message: `Пользователь по указанному _id: ${usersId} не найден.` });
+    }
+    const { avatar } = req.body;
+    console.log(req.body.avatar);
+
+    await User.findByIdAndUpdate(userId, avatar);
+    return res.status(200).json({ avatar: avatar });
+
+  } catch (e) {
+    if (e.name === 'ValidationError') {
+      console.error(e);
+      return res.status(400).send({ message: 'Переданы некорректные данные для изменения фотографии профиля.' });
+    } else {
+      console.error(e);
+      return res.status(500).send({ message: 'Произошла ошибка при попытке изменить фото профиля.' });
+    }
+  }
 };
 
 module.exports = {

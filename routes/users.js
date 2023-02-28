@@ -3,14 +3,10 @@ const { getUsers, createUser, getUser, updateUser, updateAvatar } = require('../
 
 
 users.get('/', getUsers); //возвращает всех пользователей
-
-//В теле POST-запроса на создание пользователя
-//передайте JSON-объект
-//с тремя полями: name, about и avatar.
 users.post('/', createUser); //создаёт пользователя
 users.get('/:usersId', getUser); //возвращает пользователя по _id
-
-
+//обновление Разрешено частичное обновление профиля. Можно передавать
+//в метод PATCH только те поля, значения которых нужно изменить.
 users.patch('/me', updateUser);//обновляет профиль
 users.patch('/me/avatar', updateAvatar);//обновляет аватар
 
