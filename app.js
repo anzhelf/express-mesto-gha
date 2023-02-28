@@ -20,6 +20,11 @@ app.use(bodyParser.json());
 app.use('/users', users);
 app.use('/cards', cards);
 
+app.use((req, res, next) => {
+  req.user = { _id: '63fd4fba0143b12aaac47720' };
+  next();
+});
+
 //соединяемся с базой
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true

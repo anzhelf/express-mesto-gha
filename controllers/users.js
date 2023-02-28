@@ -6,18 +6,23 @@ const getUsers = async (req, res) => {
     return res.status(200).json(users);
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ message: 'Произошла ошибка' });
+    return res.status(500).send({ message: 'Произошла ошибка.' });
   }
 };
 
 const createUser = async (req, res) => {
   try {
-    const user = req.body;
-    await User.create(user);
-    return res.status(201).json(user);
+    const { name, about, avatar } = req.body;
+    await User.create({ name, about, avatar });
+    return res.status(201).json(req.body);
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ message: 'Произошла ошибка при попытке создать пользователя' });
+    if (e.name === 'ValidationError') {
+      console.error(e);
+      return res.status(400).send({ message: 'Переданы некорректные данные при создании.' });
+    } else {
+      console.error(e);
+      return res.status(500).send({ message: 'Произошла ошибка при попытке создать пользователя.' });
+    }
   }
 };
 
@@ -27,7 +32,23 @@ const getUser = async (req, res) => {
     const user = await User.findById(usersId);
     //!user
     if (user === null) {
-      return res.status(404).json({ message: 'Пользователь не найден' });
+      return res.status(404).send({ message: `Пользователь по указанному _id: ${usersId} не найден.` });
+    }
+
+    return res.status(200).json(user);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).send({ message: 'Произошла ошибка.' });
+  }
+};
+
+const updateUser = async (req, res) => {
+  try {
+    const { usersId } = req.params;
+    const user = await User.findById(usersId);
+    //!user
+    if (user === null) {
+      return res.status(404).json({ message: `Пользователь по указанному _id: ${usersId} не найден.` });
     }
 
     return res.status(200).json(user);
@@ -36,11 +57,6 @@ const getUser = async (req, res) => {
     console.error(e);
     return res.status(500).json({ message: 'Произошла ошибка' });
   }
-
-};
-
-const updateUser = (req, res) => {
-  return res.status(200).send({});
 };
 
 const updateAvatar = (req, res) => {
