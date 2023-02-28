@@ -5,8 +5,8 @@ const getUsers = async (req, res) => {
     const users = await User.find({});
     return res.status(200).json(users);
   } catch (e) {
-    console.log(e);
-    return res.status(500).json(users);
+    console.error(e);
+    return res.status(500).json({ message: 'Произошла ошибка' });
   }
 };
 
@@ -15,32 +15,28 @@ const createUser = async (req, res) => {
     const user = req.body;
     await User.create(user);
     return res.status(201).json(user);
-
   } catch (e) {
     console.error(e);
     return res.status(500).json({ message: 'Произошла ошибка при попытке создать пользователя' });
   }
 };
 
-const getUser = (req, res) => {
-  const data = res.send(req);
-  console.log(req);
-  return data;
+const getUser = async (req, res) => {
+  try {
+    const { usersId } = req.params;
+    const user = await User.findById(usersId);
+    //!user
+    if (user === null) {
+      return res.status(404).json({ message: 'Пользователь не найден' });
+    }
 
+    return res.status(200).json(user);
 
-  // try {
-  //   console.log('консоль', req);
-  //   const { usersId } = req.params;
-  //   const user = await User.findById(usersId);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: 'Произошла ошибка' });
+  }
 
-  //   return req;
-  //   // if (user === null) {
-  //   //   return res.status(404).json({ message: 'Пользователь не найден' })
-  //   // }
-  // } catch (e) {
-  //   console.log(e);
-  //   return res.status(500).json(users);
-  // }
 };
 
 const updateUser = (req, res) => {

@@ -7,6 +7,7 @@ cards.get('/', getCards); //возвращает все карточки
 //JSON-объект с двумя полями: name и link.
 cards.post('/', createCard); //создаёт карточку
 cards.delete('/:cardId', deleteCard); //удаляет карточку по идентификатору
+//cards.get('/:cardId', deleteCard); //удаляет карточку по идентификатору
 
 
 //В каждом роуте понадобится _id пользователя,

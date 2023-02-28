@@ -31,11 +31,3 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
     error ? console.log(error) : console.log(`App listening on port ${PORT}`);
   });
 });
-
-fetch('http://localhost:3000/users')
-  .then((res) => {
-    console.log(res); // если всё хорошо, получили ответ
-  })
-  .catch((err) => {
-    console.log('Ошибка. Запрос не выполнен');
-  });
