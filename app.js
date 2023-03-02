@@ -17,13 +17,14 @@ const app = express();
 //app.use(express.static(patch.join(__dirname, 'public')));
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  req.user = { _id: '63fd6f38cf3cded2dedfc614' };
+  next();
+});
+
 app.use('/users', users);
 app.use('/cards', cards);
 
-app.use((req, res, next) => {
-  req.user = { _id: '63fd4fba0143b12aaac47720' };
-  next();
-});
 
 //соединяемся с базой
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
