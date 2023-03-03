@@ -31,15 +31,21 @@ const getUser = async (req, res) => {
   try {
     const { usersId } = req.params;
     const user = await User.findById(usersId);
-    //!user 404
+    //!user
     if (user === null) {
-      return res.status(400).send({ message: `Пользователь по указанному _id: ${usersId} не найден.` });
+      return res.status(404).send({ message: `Пользователь по указанному _id: ${usersId} не найден.` });
     }
 
     return res.status(200).json(user);
   } catch (e) {
-    console.error(e);
-    return res.status(500).send({ message: 'Произошла ошибка.' });
+    console.log('ERRRRRR', e.name, e);
+    if (e.name === 'CastError' || e.name === 'ValidationError') {
+      console.error(e);
+      return res.status(400).send({ message: 'Передан некорректный id.' });
+    } else {
+      console.error(e);
+      return res.status(500).send({ message: 'Произошла ошибка.' });
+    }
   }
 };
 
