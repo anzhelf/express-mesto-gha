@@ -50,8 +50,13 @@ const deleteCard = async (req, res) => {
     return res.status(200).send({ message: `Карточка ${cardId} удалена.` });
 
   } catch (e) {
-    console.error(e);
-    return res.status(500).send({ message: `Произошла ошибка при попытке удалить карточку ${cardId}.` });
+    if (e.name === 'CastError' || e.name === 'ValidationError') {
+      console.error(e);
+      return res.status(400).send({ message: 'Передан некорректный id карточки.' });
+    } else {
+      console.error(e);
+      return res.status(500).send({ message: `Произошла ошибка при попытке удалить карточку ${cardId}.` });
+    }
   }
 };
 
