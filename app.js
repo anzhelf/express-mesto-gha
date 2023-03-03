@@ -25,6 +25,10 @@ app.use((req, res, next) => {
 app.use('/users', users);
 app.use('/cards', cards);
 
+app.use('*', (req, res) => {
+  return res.status(404).send({ message: 'Страница не существует' });
+});
+
 //включаем валидацию базы
 mongoose.set('runValidators', true);
 //соединяемся с базой
