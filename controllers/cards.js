@@ -15,8 +15,8 @@ const createCard = async (req, res) => {
     const owner = req.user._id;
     const { name, link } = req.body;
 
-    await Card.create({ name, link, owner });
-    return res.status(201).json(req.body);
+    const card = await Card.create({ name, link, owner });
+    return res.status(201).json(card);
 
   } catch (e) {
     if (e.name === 'ValidationError') {
@@ -66,7 +66,7 @@ const likeCard = async (req, res) => {
     );
 
     const card = await Card.findById(cardId);
-    return res.status(200).json(card.likes);
+    return res.status(200).send({ likes: card.likes });
 
   } catch (e) {
     console.error(e);
@@ -85,7 +85,7 @@ const deleteLikeCard = async (req, res) => {
     );
 
     const card = await Card.findById(cardId);
-    return res.status(200).json(card.likes);
+    return res.status(200).send({ likes: card.likes });
 
   } catch (e) {
     console.error(e);

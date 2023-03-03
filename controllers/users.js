@@ -13,8 +13,9 @@ const getUsers = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const { name, about, avatar } = req.body;
-    await User.create({ name, about, avatar });
-    return res.status(201).json(req.body);
+    const user = await User.create({ name, about, avatar });
+    return res.status(201).json(user);
+
   } catch (e) {
     if (e.name === 'ValidationError') {
       console.error(e);
@@ -30,9 +31,9 @@ const getUser = async (req, res) => {
   try {
     const { usersId } = req.params;
     const user = await User.findById(usersId);
-    //!user
+    //!user 404
     if (user === null) {
-      return res.status(404).send({ message: `Пользователь по указанному _id: ${usersId} не найден.` });
+      return res.status(400).send({ message: `Пользователь по указанному _id: ${usersId} не найден.` });
     }
 
     return res.status(200).json(user);
