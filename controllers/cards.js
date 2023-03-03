@@ -58,38 +58,56 @@ const deleteCard = async (req, res) => {
 const likeCard = async (req, res) => {
   try {
     const { cardId } = req.params;
-
-    await Card.findByIdAndUpdate(
-      cardId,
-      { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-      { new: true },
-    );
-
     const card = await Card.findById(cardId);
-    return res.status(200).send({ likes: card.likes });
+
+    if (card === null) {
+      return res.status(404).send({ message: 'Карточка по указанному id не найдена.' });
+    } else {
+      await Card.findByIdAndUpdate(
+        cardId,
+        { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+        { new: true },
+      );
+
+      return res.status(200).send({ likes: card.likes });
+    }
 
   } catch (e) {
-    console.error(e);
-    return res.status(500).send({ message: 'Произошла ошибка.' });
+    if (e.name === 'CastError' || e.name === 'ValidationError') {
+      console.error(e);
+      return res.status(400).send({ message: 'Передан некорректный id карточки.' });
+    } else {
+      console.error(e);
+      return res.status(500).send({ message: 'Произошла ошибка.' });
+    }
   }
 };
 
 const deleteLikeCard = async (req, res) => {
   try {
     const { cardId } = req.params;
-
-    await Card.findByIdAndUpdate(
-      cardId,
-      { $pull: { likes: req.user._id } }, // убрать _id из массива
-      { new: true },
-    );
-
     const card = await Card.findById(cardId);
-    return res.status(200).send({ likes: card.likes });
+
+    if (card === null) {
+      return res.status(404).send({ message: 'Карточка по указанному id не найдена.' });
+    } else {
+      await Card.findByIdAndUpdate(
+        cardId,
+        { $pull: { likes: req.user._id } }, // убрать _id из массива
+        { new: true },
+      );
+
+      return res.status(200).send({ likes: card.likes });
+    }
 
   } catch (e) {
-    console.error(e);
-    return res.status(500).send({ message: 'Произошла ошибка.' });
+    if (e.name === 'CastError' || e.name === 'ValidationError') {
+      console.error(e);
+      return res.status(400).send({ message: 'Передан некорректный id карточки.' });
+    } else {
+      console.error(e);
+      return res.status(500).send({ message: 'Произошла ошибка.' });
+    }
   }
 };
 
