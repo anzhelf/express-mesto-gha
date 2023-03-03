@@ -38,7 +38,6 @@ const getUser = async (req, res) => {
 
     return res.status(200).json(user);
   } catch (e) {
-    console.log('ERRRRRR', e.name, e);
     if (e.name === 'CastError' || e.name === 'ValidationError') {
       console.error(e);
       return res.status(400).send({ message: 'Передан некорректный id.' });
