@@ -25,7 +25,8 @@ app.use((req, res, next) => {
 app.use('/users', users);
 app.use('/cards', cards);
 
-
+//включаем валидацию базы
+mongoose.set('runValidators', true);
 //соединяемся с базой
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true

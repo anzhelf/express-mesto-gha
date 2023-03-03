@@ -44,16 +44,9 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    //const { usersId } = req.params;
-    const userId = '63fd6f38cf3cded2dedfc614';
-    const user = await User.findById(userId);
-
-    if (user === null) {
-      return res.status(404).json({ message: `Пользователь по указанному _id: ${usersId} не найден.` });
-    }
-
-    await User.findByIdAndUpdate(userId, req.body);
-    return res.status(200).json(req.body);
+    const { name, about } = req.body;
+    await User.findByIdAndUpdate(req.user._id, { name: name, about: about }, { new: true });
+    return res.status(200).json({ name: name, about: about });
 
   } catch (e) {
     if (e.name === 'ValidationError') {
@@ -68,17 +61,9 @@ const updateUser = async (req, res) => {
 
 const updateAvatar = async (req, res) => {
   try {
-    //const { usersId } = req.params;
-    const userId = '63fd6f38cf3cded2dedfc614';
-    const user = await User.findById(userId);
-
-    if (user === null) {
-      return res.status(404).json({ message: `Пользователь по указанному _id: ${usersId} не найден.` });
-    }
     const { avatar } = req.body;
-    console.log(req.body.avatar);
-
-    await User.findByIdAndUpdate(userId, avatar);
+    console.log(avatar);
+    await User.findByIdAndUpdate(req.user._id, { avatar: avatar }, { new: true });
     return res.status(200).json({ avatar: avatar });
 
   } catch (e) {
