@@ -11,5 +11,5 @@ const CodeSucces = {
 
 module.exports = {
   CodeError,
-  CodeSucces
+  CodeSucces,
 };

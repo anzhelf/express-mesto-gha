@@ -31,14 +31,11 @@ const createCard = async (req, res) => {
 const deleteCard = async (req, res) => {
   const { cardId } = req.params;
   try {
-    const admin = req.user._id;
     const card = await Card.findById(cardId);
 
     if (card === null) {
       return res.status(CodeError.NOT_FOUND).send({ message: `Карточка ${cardId} не найдена.` });
     }
-
-    const owner = card.owner.toHexString();
 
     await Card.findByIdAndRemove(cardId);
     return res.status(200).send({ message: `Карточка ${cardId} удалена.` });
