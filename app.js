@@ -8,23 +8,12 @@ const bodyParser = require('body-parser');
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 
+const { CodeError, CodeSucces } = require('./statusCode');
+
 const PORT = 3000;
 
 // создали сервер
 const app = express();
-
-const CodeError = {
-  BAD_REQEST: 400,
-  UNAUTHORIZED: 401,
-  NOT_FOUND: 404,
-  ALREADY_EXISTS: 409,
-  SERVER_ERROR: 500,
-};
-
-const CodeSucces = {
-  OK: 200,
-  CREATED: 201,
-};
 
 // мидлвары для статики
 // app.use(express.static(patch.join(__dirname, 'public')));
