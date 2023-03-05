@@ -4,7 +4,7 @@ const { CodeError, CodeSucces } = require('../statusCode');
 const getCards = async (req, res) => {
   try {
     const cards = await Card.find({});
-    return res.status(200).json(cards);
+    return res.json(cards);
   } catch (e) {
     console.error(e);
     return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка' });
@@ -38,7 +38,7 @@ const deleteCard = async (req, res) => {
     }
 
     await Card.findByIdAndRemove(cardId);
-    return res.status(200).send({ message: `Карточка ${cardId} удалена.` });
+    return res.send({ message: `Карточка ${cardId} удалена.` });
   } catch (e) {
     if (e.name === 'CastError') {
       console.error(e);
@@ -52,19 +52,18 @@ const deleteCard = async (req, res) => {
 const updateLike = async (req, res, method) => {
   try {
     const { cardId } = req.params;
-    const card = await Card.findById(cardId);
 
-    if (card === null) {
-      return res.status(CodeError.NOT_FOUND).send({ message: 'Карточка по указанному id не найдена.' });
-    }
-
-    await Card.findByIdAndUpdate(
+    const card = await Card.findByIdAndUpdate(
       cardId,
       { [method]: { likes: req.user._id } },
       { new: true },
     );
 
-    return res.status(200).send({ likes: card.likes });
+    if (card === null) {
+      return res.status(CodeError.NOT_FOUND).send({ message: 'Карточка по указанному id не найдена.' });
+    }
+
+    return res.send({ likes: card.likes });
   } catch (e) {
     if (e.name === 'CastError') {
       console.error(e);

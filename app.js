@@ -38,5 +38,5 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   console.log('Connected to MongoDb');
 
   // Слушаем порт, подключаем апи
-  app.listen(PORT, (error) => error ? console.error(error) : console.log(`App listening on port ${PORT}`));
+  app.listen(PORT, (error) => (error ? console.error(error) : console.log(`App listening on port ${PORT}`)));
 });
