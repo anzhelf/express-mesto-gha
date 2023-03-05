@@ -28,9 +28,9 @@ const createCard = async (req, res) => {
 };
 
 const deleteCard = async (req, res) => {
+  const { cardId } = req.params;
   try {
     const admin = req.user._id;
-    const { cardId } = req.params;
     const card = await Card.findById(cardId);
 
     if (card === null) {
