@@ -49,7 +49,7 @@ const deleteCard = async (req, res) => {
   }
 };
 
-const likeCard = async (req, res) => {
+const updateLike = async (req, res, method) => {
   try {
     const { cardId } = req.params;
     const card = await Card.findById(cardId);
@@ -57,9 +57,10 @@ const likeCard = async (req, res) => {
     if (card === null) {
       return res.status(CodeError.NOT_FOUND).send({ message: 'Карточка по указанному id не найдена.' });
     }
+
     await Card.findByIdAndUpdate(
       cardId,
-      { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+      { [method]: { likes: req.user._id } },
       { new: true },
     );
 
@@ -74,30 +75,8 @@ const likeCard = async (req, res) => {
   }
 };
 
-const deleteLikeCard = async (req, res) => {
-  try {
-    const { cardId } = req.params;
-    const card = await Card.findById(cardId);
-
-    if (card === null) {
-      return res.status(CodeError.NOT_FOUND).send({ message: 'Карточка по указанному id не найдена.' });
-    }
-    await Card.findByIdAndUpdate(
-      cardId,
-      { $pull: { likes: req.user._id } }, // убрать _id из массива
-      { new: true },
-    );
-
-    return res.status(200).send({ likes: card.likes });
-  } catch (e) {
-    if (e.name === 'CastError') {
-      console.error(e);
-      return res.status(CodeError.BAD_REQEST).send({ message: 'Передан некорректный id карточки.' });
-    }
-    console.error(e);
-    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка.' });
-  }
-};
+const likeCard = (req, res) => updateLike(req, res, '$addToSet');
+const deleteLikeCard = (req, res) => updateLike(req, res, '$pull');
 
 module.exports = {
   getCards,
