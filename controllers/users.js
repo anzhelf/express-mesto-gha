@@ -4,7 +4,7 @@ const { CodeError, CodeSucces } = require('../statusCode');
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({});
-    return res.status(200).json(users);
+    return res.json(users);
   } catch (e) {
     console.error(e);
     return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка.' });
@@ -36,7 +36,7 @@ const getUser = async (req, res) => {
       return res.status(CodeError.NOT_FOUND).send({ message: `Пользователь по указанному _id: ${usersId} не найден.` });
     }
 
-    return res.status(200).json(user);
+    return res.json(user);
   } catch (e) {
     if (e.name === 'CastError') {
       console.error(e);
@@ -51,7 +51,7 @@ const updateUser = async (req, res) => {
   try {
     const { name, about } = req.body;
     await User.findByIdAndUpdate(req.user._id, { name, about }, { new: true });
-    return res.status(200).json({ name, about });
+    return res.json({ name, about });
   } catch (e) {
     if (e.name === 'ValidationError') {
       console.error(e);
@@ -65,9 +65,8 @@ const updateUser = async (req, res) => {
 const updateAvatar = async (req, res) => {
   try {
     const { avatar } = req.body;
-    console.log(avatar);
     await User.findByIdAndUpdate(req.user._id, { avatar }, { new: true });
-    return res.status(200).json({ avatar });
+    return res.json({ avatar });
   } catch (e) {
     if (e.name === 'ValidationError') {
       console.error(e);
