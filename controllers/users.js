@@ -1,5 +1,5 @@
-// const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 const { CodeError, CodeSucces } = require('../statusCode');
 
 const getUsers = async (req, res) => {
@@ -14,12 +14,10 @@ const getUsers = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    // await bcrypt.hash(req.body.password, 10);
-    const {
-      name, about, avatar, password, email,
-    } = req.body;
+    const hash = await bcrypt.hash(req.body.password, 10);
+    const { name, about, avatar, email } = req.body;
     const user = await User.create({
-      name, about, avatar, password, email,
+      name, about, avatar, email, password: hash
     });
     return res.status(CodeSucces.CREATED).json(user);
   } catch (e) {
