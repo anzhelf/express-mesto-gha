@@ -1,3 +1,4 @@
+// const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const { CodeError, CodeSucces } = require('../statusCode');
 
@@ -13,8 +14,13 @@ const getUsers = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { name, about, avatar } = req.body;
-    const user = await User.create({ name, about, avatar });
+    // await bcrypt.hash(req.body.password, 10);
+    const {
+      name, about, avatar, password, email,
+    } = req.body;
+    const user = await User.create({
+      name, about, avatar, password, email,
+    });
     return res.status(CodeSucces.CREATED).json(user);
   } catch (e) {
     if (e.name === 'ValidationError') {
