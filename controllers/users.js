@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { CodeError, CodeSucces } = require('../statusCode');
 
 const getUsers = async (req, res) => {
@@ -81,10 +82,51 @@ const updateAvatar = async (req, res) => {
   }
 };
 
+//проверяем почту и пароль
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email }).select('+password');
+    if (user === null) {
+      return res.status(401).send({ message: 'Неправильные почта или пароль.' });
+    }
+
+    const matched = await bcrypt.compare(password, user.password);
+
+    if (!matched) {
+      // хеши не совпали — отклоняем промис
+      return res.status(401).send({ message: 'Неправильные почта или пароль.' });
+    }
+
+    // аутентификация успешна
+    //Если почта и пароль правильные,
+    //контроллер должен создавать JWT сроком на неделю. В пейлоуд токена
+    //следует записывать только свойство _id, которое содержит идентификатор
+    //пользователя:
+
+    const token = jwt.sign(
+      { _id: user._id },
+      'some-secret-key',
+      { expiresIn: '7d' }
+    );
+    return res.send({ token });
+
+  } catch (e) {
+    if (e.name === 'ValidationError') {
+      console.error(e);
+      return res.status(CodeError.BAD_REQEST).send({ message: 'Переданы некорректные данные при создании.' });
+    }
+    console.error(e);
+    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка при попытке создать пользователя.' });
+  }
+};
+
 module.exports = {
   getUsers,
   createUser,
   getUser,
   updateUser,
   updateAvatar,
+  login
 };
