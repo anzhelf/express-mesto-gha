@@ -1,6 +1,6 @@
-const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const User = require('../models/user');
 const { CodeError, CodeSucces } = require('../statusCode');
 
 const getUsers = async (req, res) => {
@@ -16,9 +16,11 @@ const getUsers = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const hash = await bcrypt.hash(req.body.password, 10);
-    const { name, about, avatar, email } = req.body;
+    const {
+      name, about, avatar, email,
+    } = req.body;
     const user = await User.create({
-      name, about, avatar, email, password: hash
+      name, about, avatar, email, password: hash,
     });
     return res.status(CodeSucces.CREATED).json(user);
   } catch (e) {
@@ -82,7 +84,7 @@ const updateAvatar = async (req, res) => {
   }
 };
 
-//проверяем почту и пароль
+// проверяем почту и пароль
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -102,10 +104,9 @@ const login = async (req, res) => {
     const token = jwt.sign(
       { _id: user._id },
       'some-secret-key',
-      { expiresIn: '7d' }
+      { expiresIn: '7d' },
     );
     return res.send({ token });
-
   } catch (e) {
     if (e.name === 'ValidationError') {
       console.error(e);
@@ -124,12 +125,11 @@ const getMe = async (req, res) => {
     }
 
     return res.send(user);
-
   } catch (e) {
     console.error(e);
     return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка.' });
   }
-}
+};
 
 module.exports = {
   getUsers,
@@ -138,5 +138,5 @@ module.exports = {
   updateUser,
   updateAvatar,
   login,
-  getMe
+  getMe,
 };

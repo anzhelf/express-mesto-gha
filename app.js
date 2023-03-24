@@ -20,10 +20,10 @@ const app = express();
 // app.use(express.static(patch.join(__dirname, 'public')));
 app.use(bodyParser.json());
 
-app.use((req, res, next) => {
-  req.user = { _id: '63fd6f38cf3cded2dedfc614' };
-  next();
-});
+// app.use((req, res, next) => {
+//   req.user = { _id: '63fd6f38cf3cded2dedfc614' };
+//   next();
+// });
 
 app.use('/users', users);
 app.use('/cards', cards);
