@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const users = require('./routes/users');
 const cards = require('./routes/cards');
+// const router = require('./routes');
 
 const { CodeError } = require('./statusCode');
 
@@ -26,6 +27,8 @@ app.use((req, res, next) => {
 
 app.use('/users', users);
 app.use('/cards', cards);
+
+// app.use('/', router);
 
 app.use('*', (req, res) => res.status(CodeError.NOT_FOUND).send({ message: 'Страница не существует.' }));
 

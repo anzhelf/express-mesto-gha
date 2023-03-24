@@ -99,12 +99,6 @@ const login = async (req, res) => {
       return res.status(401).send({ message: 'Неправильные почта или пароль.' });
     }
 
-    // аутентификация успешна
-    //Если почта и пароль правильные,
-    //контроллер должен создавать JWT сроком на неделю. В пейлоуд токена
-    //следует записывать только свойство _id, которое содержит идентификатор
-    //пользователя:
-
     const token = jwt.sign(
       { _id: user._id },
       'some-secret-key',
@@ -122,11 +116,27 @@ const login = async (req, res) => {
   }
 };
 
+const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(401).send({ message: `Пользователь с id ${req.user._id} не найден` });
+    }
+
+    return res.send(user);
+
+  } catch (e) {
+    console.error(e);
+    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка.' });
+  }
+}
+
 module.exports = {
   getUsers,
   createUser,
   getUser,
   updateUser,
   updateAvatar,
-  login
+  login,
+  getMe
 };
