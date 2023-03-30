@@ -10,6 +10,7 @@ const cards = require('./routes/cards');
 // const router = require('./routes');
 
 const { CodeError } = require('./statusCode');
+//const errorHandler = require('./middlewares/errorHandler');
 
 const PORT = 3000;
 
@@ -31,6 +32,9 @@ app.use('/cards', cards);
 // app.use('/', router);
 
 app.use('*', (req, res) => res.status(CodeError.NOT_FOUND).send({ message: 'Страница не существует.' }));
+
+//обработчик ошибки
+//app.use(errorHandler);
 
 // включаем валидацию базы
 mongoose.set('runValidators', true);

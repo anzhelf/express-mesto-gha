@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 const { CodeError, CodeSucces } = require('../statusCode');
+//const errorHandler = require('../middlewares/errorHandler');
 
 const getCards = async (req, res) => {
   try {
@@ -35,6 +36,10 @@ const deleteCard = async (req, res) => {
 
     if (card === null) {
       return res.status(CodeError.NOT_FOUND).send({ message: `Карточка ${cardId} не найдена.` });
+    }
+
+    if (owner !== admin) {
+      return res.status(403).send({ message: 'Можно удалять только свои карточки.' });
     }
 
     await Card.findByIdAndRemove(cardId);
