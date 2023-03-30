@@ -106,7 +106,10 @@ const login = async (req, res) => {
       'some-secret-key',
       { expiresIn: '7d' },
     );
-    return res.send({ token });
+    return res.cookie('jwt', token, {
+      maxAge: 3600000 * 24 * 7,
+      httpOnly: true,
+    }).send({ message: 'Этот токен безопасно сохранен в httpOnly куку' });
   } catch (e) {
     if (e.name === 'ValidationError') {
       console.error(e);

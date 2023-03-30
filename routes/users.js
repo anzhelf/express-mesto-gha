@@ -6,6 +6,7 @@ const auth = require('../middlewares/auth');
 const { celebrate, Joi } = require('celebrate');
 const { url, id } = require('../utils/regularExpressions');
 
+
 users.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),

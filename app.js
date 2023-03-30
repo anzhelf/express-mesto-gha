@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 // const router = require('./routes');
+const cookieParser = require('cookie-parser');
 
 const { CodeError } = require('./statusCode');
 //const errorHandler = require('./middlewares/errorHandler');
@@ -25,6 +26,8 @@ app.use(bodyParser.json());
 //   req.user = { _id: '63fd6f38cf3cded2dedfc614' };
 //   next();
 // });
+
+app.use(cookieParser());
 
 app.use('/users', users);
 app.use('/cards', cards);
