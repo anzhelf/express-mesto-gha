@@ -2,18 +2,20 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { CodeError, CodeSucces } = require('../statusCode');
+const errorHandler = require('../middlewares/errorHandler');
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
   try {
     const users = await User.find({});
     return res.json(users);
   } catch (e) {
-    console.error(e);
-    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка.' });
+    const err = new Error('Произошла ошибка.');
+    err.statusCode = CodeError.SERVER_ERROR;
+    next(err);
   }
 };
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   try {
     const hash = await bcrypt.hash(req.body.password, 10);
     const {
@@ -25,80 +27,94 @@ const createUser = async (req, res) => {
     return res.status(CodeSucces.CREATED).json(user);
   } catch (e) {
     if (e.name === 'ValidationError') {
-      console.error(e);
-      return res.status(CodeError.BAD_REQEST).send({ message: 'Переданы некорректные данные при создании.' });
+      const err = new Error('Переданы некорректные данные при создании.');
+      err.statusCode = CodeError.BAD_REQEST;
+      next(err);
     }
-    console.error(e);
-    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка при попытке создать пользователя.' });
+    const err = new Error('Произошла ошибка при попытке создать пользователя.');
+    err.statusCode = CodeError.SERVER_ERROR;
+    next(err);
   }
 };
 
-const getUser = async (req, res) => {
+const getUser = async (req, res, next) => {
   try {
     const { usersId } = req.params;
     const user = await User.findById(usersId);
 
     //! user
     if (user === null) {
-      return res.status(CodeError.NOT_FOUND).send({ message: `Пользователь по указанному _id: ${usersId} не найден.` });
+      const err = new Error(`Пользователь по указанному _id: ${usersId} не найден.`);
+      err.statusCode = CodeError.NOT_FOUND;
+      next(err);
     }
 
     return res.json(user);
   } catch (e) {
     if (e.name === 'CastError') {
-      console.error(e);
-      return res.status(CodeError.BAD_REQEST).send({ message: 'Передан некорректный id.' });
+      const err = new Error('Передан некорректный id.');
+      err.statusCode = CodeError.BAD_REQEST;
+      next(err);
     }
-    console.error(e);
-    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка.' });
+    const err = new Error('Произошла ошибка.');
+    err.statusCode = CodeError.SERVER_ERROR;
+    next(err);
   }
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, next) => {
   try {
     const { name, about } = req.body;
     await User.findByIdAndUpdate(req.user._id, { name, about }, { new: true });
     return res.json({ name, about });
   } catch (e) {
     if (e.name === 'ValidationError') {
-      console.error(e);
-      return res.status(CodeError.BAD_REQEST).send({ message: 'Переданы некорректные данные для изменения информации.' });
+      const err = new Error('Переданы некорректные данные для изменения информации.');
+      err.statusCode = CodeError.BAD_REQEST;
+      next(err);
     }
-    console.error(e);
-    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка при попытке изменить данные пользователя.' });
+    const err = new Error('Произошла ошибка при попытке изменить данные пользователя.');
+    err.statusCode = CodeError.SERVER_ERROR;
+    next(err);
   }
 };
 
-const updateAvatar = async (req, res) => {
+const updateAvatar = async (req, res, next) => {
   try {
     const { avatar } = req.body;
     await User.findByIdAndUpdate(req.user._id, { avatar }, { new: true });
     return res.json({ avatar });
   } catch (e) {
     if (e.name === 'ValidationError') {
-      console.error(e);
-      return res.status(CodeError.BAD_REQEST).send({ message: 'Переданы некорректные данные для изменения фотографии профиля.' });
+      const err = new Error('Переданы некорректные данные для изменения фотографии профиля.');
+      err.statusCode = CodeError.BAD_REQEST;
+      next(err);
     }
-    console.error(e);
-    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка при попытке изменить фото профиля.' });
+    const err = new Error('Произошла ошибка при попытке изменить фото профиля.');
+    err.statusCode = CodeError.SERVER_ERROR;
+    next(err);
   }
 };
 
 // проверяем почту и пароль
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email }).select('+password');
     if (user === null) {
-      return res.status(401).send({ message: 'Неправильные почта или пароль.' });
+      const err = new Error('Неправильные почта или пароль.');
+      err.statusCode = 401;
+      next(err);
     }
 
     const matched = await bcrypt.compare(password, user.password);
 
     if (!matched) {
       // хеши не совпали — отклоняем промис
-      return res.status(401).send({ message: 'Неправильные почта или пароль.' });
+      const err = new Error('Неправильные почта или пароль.');
+      err.statusCode = 401;
+      next(err);
     }
 
     const token = jwt.sign(
@@ -109,28 +125,33 @@ const login = async (req, res) => {
     return res.cookie('jwt', token, {
       maxAge: 3600000 * 24 * 7,
       httpOnly: true,
-    }).send({ message: 'Этот токен безопасно сохранен в httpOnly куку' });
+    }).send({ message: `Этот токен безопасно сохранен в httpOnly куку: ${token}` });
   } catch (e) {
     if (e.name === 'ValidationError') {
-      console.error(e);
-      return res.status(CodeError.BAD_REQEST).send({ message: 'Переданы некорректные данные при создании.' });
+      const err = new Error('Переданы некорректные данные при создании.');
+      err.statusCode = CodeError.BAD_REQEST;
+      next(err);
     }
-    console.error(e);
-    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка при попытке создать пользователя.' });
+    const err = new Error('Произошла ошибка при попытке создать пользователя.');
+    err.statusCode = CodeError.SERVER_ERROR;
+    next(err);
   }
 };
 
-const getMe = async (req, res) => {
+const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) {
-      return res.status(401).send({ message: `Пользователь с id ${req.user._id} не найден` });
+      const err = new Error(`Пользователь с id ${req.user._id} не найден`);
+      err.statusCode = 401;
+      next(err);
     }
 
     return res.send(user);
   } catch (e) {
-    console.error(e);
-    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка.' });
+    const err = new Error('Произошла ошибка.');
+    err.statusCode = CodeError.SERVER_ERROR;
+    next(err);
   }
 };
 

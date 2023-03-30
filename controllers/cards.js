@@ -1,18 +1,19 @@
 const Card = require('../models/card');
 const { CodeError, CodeSucces } = require('../statusCode');
-//const errorHandler = require('../middlewares/errorHandler');
+const errorHandler = require('../middlewares/errorHandler');
 
-const getCards = async (req, res) => {
+const getCards = async (req, res, next) => {
   try {
     const cards = await Card.find({});
     return res.json(cards);
   } catch (e) {
-    console.error(e);
-    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка' });
+    const err = new Error('Произошла ошибка');
+    err.statusCode = CodeError.SERVER_ERROR;
+    next(err);
   }
 };
 
-const createCard = async (req, res) => {
+const createCard = async (req, res, next) => {
   try {
     const owner = req.user._id;
     const { name, link } = req.body;
@@ -21,40 +22,48 @@ const createCard = async (req, res) => {
     return res.status(CodeSucces.CREATED).json(card);
   } catch (e) {
     if (e.name === 'ValidationError') {
-      console.error(e);
-      return res.status(CodeError.BAD_REQEST).send({ message: 'Переданы некорректные данные при создании карточки.' });
+      const err = new Error('Переданы некорректные данные при создании карточки.');
+      err.statusCode = CodeError.BAD_REQEST;
+      next(err);
     }
-    console.error(e);
-    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка.' });
+    const err = new Error('Произошла ошибка');
+    err.statusCode = CodeError.SERVER_ERROR;
+    next(err);
   }
 };
 
-const deleteCard = async (req, res) => {
+const deleteCard = async (req, res, next) => {
   const { cardId } = req.params;
   try {
     const card = await Card.findById(cardId);
 
     if (card === null) {
-      return res.status(CodeError.NOT_FOUND).send({ message: `Карточка ${cardId} не найдена.` });
+      const err = new Error(`Карточка ${cardId} не найдена.`);
+      err.statusCode = CodeError.NOT_FOUND;
+      next(err);
     }
 
     if (owner !== admin) {
-      return res.status(403).send({ message: 'Можно удалять только свои карточки.' });
+      const err = new Error('Можно удалять только свои карточки.');
+      err.statusCode = 403;
+      next(err);
     }
 
     await Card.findByIdAndRemove(cardId);
     return res.send({ message: `Карточка ${cardId} удалена.` });
   } catch (e) {
     if (e.name === 'CastError') {
-      console.error(e);
-      return res.status(CodeError.BAD_REQEST).send({ message: 'Передан некорректный id карточки.' });
+      const err = new Error('Передан некорректный id карточки.');
+      err.statusCode = CodeError.BAD_REQEST;
+      next(err);
     }
-    console.error(e);
-    return res.status(CodeError.SERVER_ERROR).send({ message: `Произошла ошибка при попытке удалить карточку ${cardId}.` });
+    const err = new Error(`Произошла ошибка при попытке удалить карточку ${cardId}.`);
+    err.statusCode = CodeError.SERVER_ERROR;
+    next(err);
   }
 };
 
-const updateLike = async (req, res, method) => {
+const updateLike = async (req, res, method, next) => {
   try {
     const { cardId } = req.params;
 
@@ -65,17 +74,21 @@ const updateLike = async (req, res, method) => {
     );
 
     if (card === null) {
-      return res.status(CodeError.NOT_FOUND).send({ message: 'Карточка по указанному id не найдена.' });
+      const err = new Error('Карточка по указанному id не найдена.');
+      err.statusCode = CodeError.NOT_FOUND;
+      next(err);
     }
 
     return res.send({ likes: card.likes });
   } catch (e) {
     if (e.name === 'CastError') {
-      console.error(e);
-      return res.status(CodeError.BAD_REQEST).send({ message: 'Передан некорректный id карточки.' });
+      const err = new Error('Передан некорректный id карточки.');
+      err.statusCode = CodeError.BAD_REQEST;
+      next(err);
     }
-    console.error(e);
-    return res.status(CodeError.SERVER_ERROR).send({ message: 'Произошла ошибка.' });
+    const err = new Error('Произошла ошибка.');
+    err.statusCode = CodeError.SERVER_ERROR;
+    next(err);
   }
 };
 
