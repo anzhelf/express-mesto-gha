@@ -27,6 +27,7 @@ const createUser = async (req, res, next) => {
     return res.status(CodeSucces.CREATED).json(user);
   } catch (e) {
     if (e.name === 'ValidationError') {
+      console.log("AAAAAAA", CodeError.BAD_REQEST);
       const err = new Error('Переданы некорректные данные при создании.');
       err.statusCode = CodeError.BAD_REQEST;
       next(err);

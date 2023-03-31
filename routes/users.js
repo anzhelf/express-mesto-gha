@@ -6,6 +6,8 @@ const {
 const auth = require('../middlewares/auth');
 const { url, id } = require('../utils/regularExpressions');
 
+//users.post('/signup', createUser); // создаёт пользователя
+
 users.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),

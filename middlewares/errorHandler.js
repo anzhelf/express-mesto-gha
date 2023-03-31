@@ -7,12 +7,12 @@ const { CodeError } = require('../statusCode');
 //   }
 // }
 
-const errorHandler = (req, res, next, err) => {
+const errorHandler = (err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
   const { statusCode = CodeError.SERVER_ERROR, message } = err;
-  console.log('ERRRRRRRRRAAAAAA', err);
-  console.log('ERRRRRRRRRAAAAAA', res.status);
-  res.status(CodeError.SERVER_ERROR).send({
+  console.log('RRRRRR', statusCode);
+  console.log('EEEEEE', message);
+  res.status(statusCode).send({
     message: statusCode === 500
       ? 'На сервере произошла ошибка'
       : message,
