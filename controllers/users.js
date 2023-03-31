@@ -29,7 +29,7 @@ const createUser = async (req, res, next) => {
     if (e.name === 'ValidationError') {
       const err = new Error('Переданы некорректные данные при создании.');
       err.statusCode = CodeError.BAD_REQEST;
-      return next(err);
+      next(err);
     }
     const err = new Error('Произошла ошибка при попытке создать пользователя.');
     err.statusCode = CodeError.SERVER_ERROR;
@@ -46,7 +46,7 @@ const getUser = async (req, res, next) => {
     if (user === null) {
       const err = new Error(`Пользователь по указанному _id: ${usersId} не найден.`);
       err.statusCode = CodeError.NOT_FOUND;
-      return next(err);
+      next(err);
     }
 
     return res.json(user);
@@ -54,7 +54,7 @@ const getUser = async (req, res, next) => {
     if (e.name === 'CastError') {
       const err = new Error('Передан некорректный id.');
       err.statusCode = CodeError.BAD_REQEST;
-      return next(err);
+      next(err);
     }
     const err = new Error('Произошла ошибка.');
     err.statusCode = CodeError.SERVER_ERROR;

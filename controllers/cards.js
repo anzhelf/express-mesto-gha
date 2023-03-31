@@ -23,7 +23,7 @@ const createCard = async (req, res, next) => {
     if (e.name === 'ValidationError') {
       const err = new Error('Переданы некорректные данные при создании карточки.');
       err.statusCode = CodeError.BAD_REQEST;
-      return next(err);
+      next(err);
     }
     const err = new Error('Произошла ошибка');
     err.statusCode = CodeError.SERVER_ERROR;
@@ -33,19 +33,22 @@ const createCard = async (req, res, next) => {
 
 const deleteCard = async (req, res, next) => {
   const { cardId } = req.params;
+  const admin = req.user._id;
   try {
     const card = await Card.findById(cardId);
 
     if (card === null) {
       const err = new Error(`Карточка ${cardId} не найдена.`);
       err.statusCode = CodeError.NOT_FOUND;
-      return next(err);
+      next(err);
     }
+
+    const owner = card.owner.toHexString();
 
     if (owner !== admin) {
       const err = new Error('Можно удалять только свои карточки.');
       err.statusCode = 403;
-      return next(err);
+      next(err);
     }
 
     await Card.findByIdAndRemove(cardId);
@@ -54,7 +57,7 @@ const deleteCard = async (req, res, next) => {
     if (e.name === 'CastError') {
       const err = new Error('Передан некорректный id карточки.');
       err.statusCode = CodeError.BAD_REQEST;
-      return next(err);
+      next(err);
     }
     const err = new Error(`Произошла ошибка при попытке удалить карточку ${cardId}.`);
     err.statusCode = CodeError.SERVER_ERROR;
@@ -75,7 +78,7 @@ const updateLike = async (req, res, method, next) => {
     if (card === null) {
       const err = new Error('Карточка по указанному id не найдена.');
       err.statusCode = CodeError.NOT_FOUND;
-      return next(err);
+      next(err);
     }
 
     return res.send({ likes: card.likes });
@@ -83,7 +86,7 @@ const updateLike = async (req, res, method, next) => {
     if (e.name === 'CastError') {
       const err = new Error('Передан некорректный id карточки.');
       err.statusCode = CodeError.BAD_REQEST;
-      return next(err);
+      next(err);
     }
     const err = new Error('Произошла ошибка.');
     err.statusCode = CodeError.SERVER_ERROR;
