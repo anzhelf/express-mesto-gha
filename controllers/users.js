@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { CodeError, CodeSucces } = require('../statusCode');
-const errorHandler = require('../middlewares/errorHandler');
 
 const getUsers = async (req, res, next) => {
   try {
