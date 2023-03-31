@@ -6,13 +6,13 @@ const mongoose = require('mongoose');
 // const patch = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 // const router = require('./routes');
 
 const { CodeError } = require('./statusCode');
 const errorHandler = require('./middlewares/errorHandler');
-const { errors } = require('celebrate');
 
 const PORT = 3000;
 
