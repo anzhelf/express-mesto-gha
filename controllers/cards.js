@@ -1,6 +1,5 @@
 const Card = require('../models/card');
 const { CodeError, CodeSucces } = require('../statusCode');
-const errorHandler = require('../middlewares/errorHandler');
 
 const getCards = async (req, res, next) => {
   try {
@@ -9,7 +8,7 @@ const getCards = async (req, res, next) => {
   } catch (e) {
     const err = new Error('Произошла ошибка');
     err.statusCode = CodeError.SERVER_ERROR;
-    next(err);
+    return next(err);
   }
 };
 
@@ -24,11 +23,11 @@ const createCard = async (req, res, next) => {
     if (e.name === 'ValidationError') {
       const err = new Error('Переданы некорректные данные при создании карточки.');
       err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      return next(err);
     }
     const err = new Error('Произошла ошибка');
     err.statusCode = CodeError.SERVER_ERROR;
-    next(err);
+    return next(err);
   }
 };
 
@@ -40,13 +39,13 @@ const deleteCard = async (req, res, next) => {
     if (card === null) {
       const err = new Error(`Карточка ${cardId} не найдена.`);
       err.statusCode = CodeError.NOT_FOUND;
-      next(err);
+      return next(err);
     }
 
     if (owner !== admin) {
       const err = new Error('Можно удалять только свои карточки.');
       err.statusCode = 403;
-      next(err);
+      return next(err);
     }
 
     await Card.findByIdAndRemove(cardId);
@@ -55,11 +54,11 @@ const deleteCard = async (req, res, next) => {
     if (e.name === 'CastError') {
       const err = new Error('Передан некорректный id карточки.');
       err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      return next(err);
     }
     const err = new Error(`Произошла ошибка при попытке удалить карточку ${cardId}.`);
     err.statusCode = CodeError.SERVER_ERROR;
-    next(err);
+    return next(err);
   }
 };
 
@@ -76,7 +75,7 @@ const updateLike = async (req, res, method, next) => {
     if (card === null) {
       const err = new Error('Карточка по указанному id не найдена.');
       err.statusCode = CodeError.NOT_FOUND;
-      next(err);
+      return next(err);
     }
 
     return res.send({ likes: card.likes });
@@ -84,11 +83,11 @@ const updateLike = async (req, res, method, next) => {
     if (e.name === 'CastError') {
       const err = new Error('Передан некорректный id карточки.');
       err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      return next(err);
     }
     const err = new Error('Произошла ошибка.');
     err.statusCode = CodeError.SERVER_ERROR;
-    next(err);
+    return next(err);
   }
 };
 

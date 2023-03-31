@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { CodeError, CodeSucces } = require('../statusCode');
+// const errorHandler = require('./middlewares/errorHandler');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -10,7 +11,7 @@ const getUsers = async (req, res, next) => {
   } catch (e) {
     const err = new Error('Произошла ошибка.');
     err.statusCode = CodeError.SERVER_ERROR;
-    next(err);
+    return next(err);
   }
 };
 
@@ -28,11 +29,11 @@ const createUser = async (req, res, next) => {
     if (e.name === 'ValidationError') {
       const err = new Error('Переданы некорректные данные при создании.');
       err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      return next(err);
     }
     const err = new Error('Произошла ошибка при попытке создать пользователя.');
     err.statusCode = CodeError.SERVER_ERROR;
-    next(err);
+    return next(err);
   }
 };
 
@@ -45,7 +46,7 @@ const getUser = async (req, res, next) => {
     if (user === null) {
       const err = new Error(`Пользователь по указанному _id: ${usersId} не найден.`);
       err.statusCode = CodeError.NOT_FOUND;
-      next(err);
+      return next(err);
     }
 
     return res.json(user);
@@ -53,11 +54,11 @@ const getUser = async (req, res, next) => {
     if (e.name === 'CastError') {
       const err = new Error('Передан некорректный id.');
       err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      return next(err);
     }
     const err = new Error('Произошла ошибка.');
     err.statusCode = CodeError.SERVER_ERROR;
-    next(err);
+    return next(err);
   }
 };
 
@@ -74,7 +75,7 @@ const updateUser = async (req, res, next) => {
     }
     const err = new Error('Произошла ошибка при попытке изменить данные пользователя.');
     err.statusCode = CodeError.SERVER_ERROR;
-    next(err);
+    return next(err);
   }
 };
 
@@ -91,7 +92,7 @@ const updateAvatar = async (req, res, next) => {
     }
     const err = new Error('Произошла ошибка при попытке изменить фото профиля.');
     err.statusCode = CodeError.SERVER_ERROR;
-    next(err);
+    return next(err);
   }
 };
 
@@ -133,7 +134,7 @@ const login = async (req, res, next) => {
     }
     const err = new Error('Произошла ошибка при попытке создать пользователя.');
     err.statusCode = CodeError.SERVER_ERROR;
-    next(err);
+    return next(err);
   }
 };
 
@@ -150,7 +151,7 @@ const getMe = async (req, res, next) => {
   } catch (e) {
     const err = new Error('Произошла ошибка.');
     err.statusCode = CodeError.SERVER_ERROR;
-    next(err);
+    return next(err);
   }
 };
 
