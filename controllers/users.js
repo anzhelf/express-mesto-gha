@@ -29,7 +29,7 @@ const createUser = async (req, res, next) => {
       about: user.about,
       avatar: user.avatar,
       email: user.email,
-      _id: user.id
+      _id: user.id,
     });
   } catch (e) {
     if (e.code === 11000) {
@@ -151,13 +151,13 @@ const login = async (req, res, next) => {
 
 const getMe = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id).select('+password');
+    const user = await User.findById(req.user._id);
     if (!user) {
       const err = new Error(`Пользователь с id ${req.user._id} не найден`);
       err.statusCode = CodeError.UNAUTHORIZED;
       next(err);
     }
-    return res.send(user);
+    return res.status(200).send(user);
   } catch (e) {
     const err = new Error('Произошла ошибка.');
     err.statusCode = CodeError.SERVER_ERROR;
