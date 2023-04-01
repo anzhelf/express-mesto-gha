@@ -47,7 +47,7 @@ const deleteCard = async (req, res, next) => {
 
     if (owner !== admin) {
       const err = new Error('Можно удалять только свои карточки.');
-      err.statusCode = 403;
+      err.statusCode = CodeError.FORBIDDEN;
       next(err);
     }
 

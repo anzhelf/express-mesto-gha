@@ -27,7 +27,6 @@ const createUser = async (req, res, next) => {
     return res.status(CodeSucces.CREATED).json(user);
   } catch (e) {
     if (e.name === 'ValidationError') {
-      console.log('AAAAAAA', CodeError.BAD_REQEST);
       const err = new Error('Переданы некорректные данные при создании.');
       err.statusCode = CodeError.BAD_REQEST;
       next(err);
@@ -105,7 +104,7 @@ const login = async (req, res, next) => {
     const user = await User.findOne({ email }).select('+password');
     if (user === null) {
       const err = new Error('Неправильные почта или пароль.');
-      err.statusCode = 401;
+      err.statusCode = CodeError.UNAUTHORIZED;
       next(err);
     }
 
@@ -114,7 +113,7 @@ const login = async (req, res, next) => {
     if (!matched) {
       // хеши не совпали — отклоняем промис
       const err = new Error('Неправильные почта или пароль.');
-      err.statusCode = 401;
+      err.statusCode = CodeError.UNAUTHORIZED;
       next(err);
     }
 
@@ -144,7 +143,7 @@ const getMe = async (req, res, next) => {
     const user = await User.findById(req.user._id);
     if (!user) {
       const err = new Error(`Пользователь с id ${req.user._id} не найден`);
-      err.statusCode = 401;
+      err.statusCode = CodeError.UNAUTHORIZED;
       next(err);
     }
 
