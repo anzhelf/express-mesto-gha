@@ -1,14 +1,15 @@
 const Card = require('../models/card');
-const { CodeError, CodeSucces } = require('../statusCode');
+const { CodeSucces } = require('../statusCode');
+const BadReqestError = require('../errors/BadReqestError');
+const NotFoundError = require('../errors/NotFoundError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 const getCards = async (req, res, next) => {
   try {
     const cards = await Card.find({});
     return res.json(cards);
   } catch (e) {
-    const err = new Error('Произошла ошибка');
-    err.statusCode = CodeError.SERVER_ERROR;
-    return next(err);
+    return next(e);
   }
 };
 
@@ -21,13 +22,9 @@ const createCard = async (req, res, next) => {
     return res.status(CodeSucces.CREATED).json(card);
   } catch (e) {
     if (e.name === 'ValidationError') {
-      const err = new Error('Переданы некорректные данные при создании карточки.');
-      err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      next(new BadReqestError('Переданы некорректные данные при создании карточки.'));
     }
-    const err = new Error('Произошла ошибка');
-    err.statusCode = CodeError.SERVER_ERROR;
-    return next(err);
+    return next(e);
   }
 };
 
@@ -38,30 +35,22 @@ const deleteCard = async (req, res, next) => {
     const card = await Card.findById(cardId);
 
     if (card === null) {
-      const err = new Error(`Карточка ${cardId} не найдена.`);
-      err.statusCode = CodeError.NOT_FOUND;
-      next(err);
+      throw new NotFoundError(`Карточка ${cardId} не найдена.`);
     }
 
     const owner = card.owner.toHexString();
 
     if (owner !== admin) {
-      const err = new Error('Можно удалять только свои карточки.');
-      err.statusCode = CodeError.FORBIDDEN;
-      next(err);
+      throw new ForbiddenError('Можно удалять только свои карточки.');
     }
 
     await Card.findByIdAndRemove(cardId);
     return res.send({ message: `Карточка ${cardId} удалена.` });
   } catch (e) {
     if (e.name === 'CastError') {
-      const err = new Error('Передан некорректный id карточки.');
-      err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      next(new BadReqestError('Передан некорректный id карточки.'));
     }
-    const err = new Error(`Произошла ошибка при попытке удалить карточку ${cardId}.`);
-    err.statusCode = CodeError.SERVER_ERROR;
-    return next(err);
+    return next(e);
   }
 };
 
@@ -76,21 +65,15 @@ const updateLike = async (req, res, method, next) => {
     );
 
     if (card === null) {
-      const err = new Error('Карточка по указанному id не найдена.');
-      err.statusCode = CodeError.NOT_FOUND;
-      next(err);
+      throw new NotFoundError('Карточка по указанному id не найдена.');
     }
 
     return res.send({ likes: card.likes });
   } catch (e) {
     if (e.name === 'CastError') {
-      const err = new Error('Передан некорректный id карточки.');
-      err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      next(new BadReqestError('Передан некорректный id карточки.'));
     }
-    const err = new Error('Произошла ошибка.');
-    err.statusCode = CodeError.SERVER_ERROR;
-    return next(err);
+    return next(e);
   }
 };
 

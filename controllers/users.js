@@ -1,8 +1,12 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { CodeError, CodeSucces } = require('../statusCode');
+const { CodeSucces } = require('../statusCode');
 // const errorHandler = require('./middlewares/errorHandler');
+const ConflictError = require('../errors/ConflictError');
+const BadReqestError = require('../errors/BadReqestError');
+const NotFoundError = require('../errors/NotFoundError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -31,18 +35,12 @@ const createUser = async (req, res, next) => {
     });
   } catch (e) {
     if (e.code === 11000) {
-      const err = new Error('Пользователь с таким email уже существует.');
-      err.statusCode = CodeError.CONFLICT;
-      next(err);
+      next(new ConflictError('Пользователь с таким email уже существует.'));
     }
     if (e.name === 'ValidationError') {
-      const err = new Error('Переданы некорректные данные при создании.');
-      err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      next(new BadReqestError('Переданы некорректные данные при создании.'));
     }
-    const err = new Error('Произошла ошибка при попытке создать пользователя.');
-    err.statusCode = CodeError.SERVER_ERROR;
-    return next(err);
+    return next(e);
   }
 };
 
@@ -53,21 +51,15 @@ const getUser = async (req, res, next) => {
 
     //! user
     if (user === null) {
-      const err = new Error(`Пользователь по указанному _id: ${usersId} не найден.`);
-      err.statusCode = CodeError.NOT_FOUND;
-      next(err);
+      throw new NotFoundError(`Пользователь по указанному _id: ${usersId} не найден.`);
     }
 
     return res.json(user);
   } catch (e) {
     if (e.name === 'CastError') {
-      const err = new Error('Передан некорректный id.');
-      err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      next(new BadReqestError('Передан некорректный id.'));
     }
-    const err = new Error('Произошла ошибка.');
-    err.statusCode = CodeError.SERVER_ERROR;
-    return next(err);
+    return next(e);
   }
 };
 
@@ -78,13 +70,9 @@ const updateUser = async (req, res, next) => {
     return res.json({ name, about });
   } catch (e) {
     if (e.name === 'ValidationError') {
-      const err = new Error('Переданы некорректные данные для изменения информации.');
-      err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      next(new BadReqestError('Переданы некорректные данные для изменения информации.'));
     }
-    const err = new Error('Произошла ошибка при попытке изменить данные пользователя.');
-    err.statusCode = CodeError.SERVER_ERROR;
-    return next(err);
+    return next(e);
   }
 };
 
@@ -95,13 +83,9 @@ const updateAvatar = async (req, res, next) => {
     return res.json({ avatar });
   } catch (e) {
     if (e.name === 'ValidationError') {
-      const err = new Error('Переданы некорректные данные для изменения фотографии профиля.');
-      err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      next(new BadReqestError('Переданы некорректные данные для изменения фотографии профиля.'));
     }
-    const err = new Error('Произошла ошибка при попытке изменить фото профиля.');
-    err.statusCode = CodeError.SERVER_ERROR;
-    return next(err);
+    return next(e);
   }
 };
 
@@ -112,18 +96,14 @@ const login = async (req, res, next) => {
 
     const user = await User.findOne({ email }).select('+password');
     if (user === null) {
-      const err = new Error('Неправильные почта или пароль.');
-      err.statusCode = CodeError.UNAUTHORIZED;
-      next(err);
+      throw new UnauthorizedError('Неправильные почта или пароль.');
     }
 
     const matched = await bcrypt.compare(password, user.password);
 
     if (!matched) {
       // хеши не совпали — отклоняем промис
-      const err = new Error('Неправильные почта или пароль.');
-      err.statusCode = CodeError.UNAUTHORIZED;
-      next(err);
+      throw new UnauthorizedError('Неправильные почта или пароль.');
     }
 
     const token = jwt.sign(
@@ -137,13 +117,9 @@ const login = async (req, res, next) => {
     }).send({ message: `Этот токен безопасно сохранен в httpOnly куку: ${token}` });
   } catch (e) {
     if (e.name === 'ValidationError') {
-      const err = new Error('Переданы некорректные данные при создании.');
-      err.statusCode = CodeError.BAD_REQEST;
-      next(err);
+      next(new BadReqestError('Переданы некорректные данные при создании.'));
     }
-    const err = new Error('Произошла ошибка при попытке создать пользователя.');
-    err.statusCode = CodeError.SERVER_ERROR;
-    return next(err);
+    return next(e);
   }
 };
 
@@ -151,15 +127,11 @@ const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) {
-      const err = new Error(`Пользователь с id ${req.user._id} не найден`);
-      err.statusCode = CodeError.UNAUTHORIZED;
-      next(err);
+      throw new UnauthorizedError(`Пользователь с id ${req.user._id} не найден`);
     }
     return res.status(200).send(user);
   } catch (e) {
-    const err = new Error('Произошла ошибка.');
-    err.statusCode = CodeError.SERVER_ERROR;
-    return next(err);
+    return next(e);
   }
 };
 
