@@ -25,13 +25,6 @@ users.post('/signin', celebrate({
 
 users.get('/', auth, getUsers); // возвращает всех пользователей
 users.get('/me', auth, getMe); // информация о текущщем пользователе
-
-users.get('/:usersId', celebrate({
-  body: Joi.object().keys({
-    id: Joi.string().pattern(id).length(24),
-  }),
-}), auth, getUser); // возвращает пользователя по _id
-
 users.patch('/me', celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().pattern(url),
@@ -46,4 +39,9 @@ users.patch('/me/avatar', celebrate({
   }),
 }), auth, updateAvatar);// обновляет аватар
 
+users.get('/:usersId', celebrate({
+  body: Joi.object().keys({
+    id: Joi.string().pattern(id).length(24),
+  }),
+}), auth, getUser); // возвращает пользователя по _id
 module.exports = users;
