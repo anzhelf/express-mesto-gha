@@ -10,7 +10,7 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const getUsers = async (req, res, next) => {
   try {
-    const users = await User.find({}).select('+password');
+    const users = await User.find({});
     return res.json(users);
   } catch (e) {
     return next(e);
