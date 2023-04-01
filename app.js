@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
 const { url } = require('./utils/regularExpressions');
+const auth = require('./middlewares/auth');
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 // const router = require('./routes');
@@ -48,6 +49,8 @@ app.post('/signin', celebrate({
     password: Joi.string().required().min(8),
   }),
 }), login); // авторизирует пользователя
+
+app.use(auth);
 
 app.use('/users', users);
 app.use('/cards', cards);

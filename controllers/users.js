@@ -9,9 +9,7 @@ const getUsers = async (req, res, next) => {
     const users = await User.find({}).select('+password');
     return res.json(users);
   } catch (e) {
-    const err = new Error('Произошла ошибка.');
-    err.statusCode = CodeError.SERVER_ERROR;
-    return next(err);
+    return next(e);
   }
 };
 
