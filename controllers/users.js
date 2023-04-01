@@ -6,7 +6,7 @@ const { CodeError, CodeSucces } = require('../statusCode');
 
 const getUsers = async (req, res, next) => {
   try {
-    const users = await User.find({});
+    const users = await User.find({}).select('+password');
     return res.json(users);
   } catch (e) {
     const err = new Error('Произошла ошибка.');
@@ -24,8 +24,19 @@ const createUser = async (req, res, next) => {
     const user = await User.create({
       name, about, avatar, email, password: hash,
     });
-    return res.status(CodeSucces.CREATED).json(user);
+    return res.status(CodeSucces.CREATED).json({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+      _id: user.id
+    });
   } catch (e) {
+    if (e.code === 11000) {
+      const err = new Error('Пользователь с таким email уже существует.');
+      err.statusCode = CodeError.CONFLICT;
+      next(err);
+    }
     if (e.name === 'ValidationError') {
       const err = new Error('Переданы некорректные данные при создании.');
       err.statusCode = CodeError.BAD_REQEST;
@@ -40,7 +51,7 @@ const createUser = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   try {
     const { usersId } = req.params;
-    const user = await User.findById(usersId);
+    const user = await User.findById(usersId).select('+password');
 
     //! user
     if (user === null) {
@@ -140,13 +151,12 @@ const login = async (req, res, next) => {
 
 const getMe = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).select('+password');
     if (!user) {
       const err = new Error(`Пользователь с id ${req.user._id} не найден`);
       err.statusCode = CodeError.UNAUTHORIZED;
       next(err);
     }
-
     return res.send(user);
   } catch (e) {
     const err = new Error('Произошла ошибка.');
