@@ -6,11 +6,13 @@ const mongoose = require('mongoose');
 // const patch = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { errors } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
+const { url, id } = require('./utils/regularExpressions');
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 // const router = require('./routes');
 
+const { createUser, login } = require('./controllers/users');
 const { CodeError } = require('./statusCode');
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -29,6 +31,23 @@ app.use(bodyParser.json());
 // });
 
 app.use(cookieParser());
+
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+    name: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(url),
+    about: Joi.string().min(2).max(30),
+  }),
+}), createUser); // создаёт пользователя
+
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+  }),
+}), login); // авторизирует пользователя
 
 app.use('/users', users);
 app.use('/cards', cards);

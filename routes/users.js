@@ -1,27 +1,10 @@
 const users = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const {
-  getUsers, createUser, getUser, updateUser, updateAvatar, login, getMe,
+  getUsers, getUser, updateUser, updateAvatar, getMe,
 } = require('../controllers/users');
 const auth = require('../middlewares/auth');
 const { url, id } = require('../utils/regularExpressions');
-
-users.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
-    name: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(url),
-    about: Joi.string().min(2).max(30),
-  }),
-}), createUser); // создаёт пользователя
-
-users.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
-  }),
-}), login); // авторизирует пользователя
 
 users.get('/', auth, getUsers); // возвращает всех пользователей
 users.get('/me', auth, getMe); // информация о текущщем пользователе
