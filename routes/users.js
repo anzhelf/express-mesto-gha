@@ -22,7 +22,7 @@ users.patch('/me/avatar', celebrate({
 
 users.get('/:usersId', celebrate({
   body: Joi.object().keys({
-    id: Joi.string().pattern(id).length(24),
+    id: Joi.string().pattern(id).required().length(24),
   }),
 }), getUser); // возвращает пользователя по _id
 module.exports = users;
