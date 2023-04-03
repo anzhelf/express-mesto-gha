@@ -36,9 +36,11 @@ const createUser = async (req, res, next) => {
   } catch (e) {
     if (e.code === 11000) {
       next(new ConflictError('Пользователь с таким email уже существует.'));
+      return;
     }
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные при создании.'));
+      return;
     }
     return next(e);
   }
@@ -47,7 +49,7 @@ const createUser = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   try {
     const { usersId } = req.params;
-    const user = await User.findById(usersId).select('+password');
+    const user = await User.findById(usersId);
 
     //! user
     if (user === null) {
@@ -58,6 +60,7 @@ const getUser = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'CastError') {
       next(new BadReqestError('Передан некорректный id.'));
+      return;
     }
     return next(e);
   }
@@ -71,6 +74,7 @@ const updateUser = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные для изменения информации.'));
+      return;
     }
     return next(e);
   }
@@ -84,6 +88,7 @@ const updateAvatar = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные для изменения фотографии профиля.'));
+      return;
     }
     return next(e);
   }
@@ -118,6 +123,7 @@ const login = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные при создании.'));
+      return;
     }
     return next(e);
   }
@@ -127,7 +133,7 @@ const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) {
-      throw new UnauthorizedError(`Пользователь с id ${req.user._id} не найден`);
+      throw new NotFoundError(`Пользователь с id ${req.user._id} не найден`);
     }
     return res.status(200).send(user);
   } catch (e) {

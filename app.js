@@ -16,27 +16,22 @@ const cards = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
 const { CodeError } = require('./statusCode');
 const errorHandler = require('./middlewares/errorHandler');
+const NotFoundError = require('./errors/NotFoundError');
 
 const PORT = 3000;
 
 // создали сервер
 const app = express();
 
-// мидлвары для статики
-// app.use(express.static(patch.join(__dirname, 'public')));
 app.use(bodyParser.json());
 
-// app.use((req, res, next) => {
-//   req.user = { _id: '63fd6f38cf3cded2dedfc614' };
-//   next();
-// });
 
 app.use(cookieParser());
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     avatar: Joi.string().pattern(url),
     about: Joi.string().min(2).max(30),
@@ -46,7 +41,7 @@ app.post('/signup', celebrate({
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
   }),
 }), login); // авторизирует пользователя
 
@@ -57,7 +52,7 @@ app.use('/cards', cards);
 
 // app.use('/', router);
 
-app.use('*', (req, res) => res.status(CodeError.NOT_FOUND).send({ message: 'Страница не существует.' }));
+app.use('*', (req, res, next) => next(new NotFoundError('Страница не существует.')));
 
 // обработчик ошибок celebrate
 app.use(errors());

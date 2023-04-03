@@ -9,9 +9,8 @@ users.get('/', getUsers); // возвращает всех пользовате�
 users.get('/me', getMe); // информация о текущщем пользователе
 users.patch('/me', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(url),
     name: Joi.string().required().min(2).max(30),
-    about: Joi.string().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
   }),
 }), updateUser);// обновляет профиль
 

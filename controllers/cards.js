@@ -23,6 +23,7 @@ const createCard = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные при создании карточки.'));
+      return;
     }
     return next(e);
   }
@@ -49,6 +50,7 @@ const deleteCard = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'CastError') {
       next(new BadReqestError('Передан некорректный id карточки.'));
+      return;
     }
     return next(e);
   }
@@ -72,6 +74,7 @@ const updateLike = async (req, res, method, next) => {
   } catch (e) {
     if (e.name === 'CastError') {
       next(new BadReqestError('Передан некорректный id карточки.'));
+      return;
     }
     return next(e);
   }
