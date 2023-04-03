@@ -13,8 +13,9 @@ const getUsers = async (req, res, next) => {
     const users = await User.find({});
     return res.json(users);
   } catch (e) {
-    return next(e);
+    next(e);
   }
+  return null;
 };
 
 const createUser = async (req, res, next) => {
@@ -36,13 +37,14 @@ const createUser = async (req, res, next) => {
   } catch (e) {
     if (e.code === 11000) {
       next(new ConflictError('Пользователь с таким email уже существует.'));
-      return;
+      return null;
     }
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные при создании.'));
-      return;
+      return null;
     }
-    return next(e);
+    next(e);
+    return null;
   }
 };
 
@@ -60,9 +62,10 @@ const getUser = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'CastError') {
       next(new BadReqestError('Передан некорректный id.'));
-      return;
+      return null;
     }
-    return next(e);
+    next(e);
+    return null;
   }
 };
 
@@ -74,9 +77,10 @@ const updateUser = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные для изменения информации.'));
-      return;
+      return null;
     }
-    return next(e);
+    next(e);
+    return null;
   }
 };
 
@@ -88,9 +92,10 @@ const updateAvatar = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные для изменения фотографии профиля.'));
-      return;
+      return null;
     }
-    return next(e);
+    next(e);
+    return null;
   }
 };
 
@@ -123,9 +128,10 @@ const login = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные при создании.'));
-      return;
+      return null;
     }
-    return next(e);
+    next(e);
+    return null;
   }
 };
 
@@ -137,7 +143,8 @@ const getMe = async (req, res, next) => {
     }
     return res.status(200).send(user);
   } catch (e) {
-    return next(e);
+    next(e);
+    return null;
   }
 };
 

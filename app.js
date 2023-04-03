@@ -14,7 +14,6 @@ const cards = require('./routes/cards');
 // const router = require('./routes');
 
 const { createUser, login } = require('./controllers/users');
-const { CodeError } = require('./statusCode');
 const errorHandler = require('./middlewares/errorHandler');
 const NotFoundError = require('./errors/NotFoundError');
 
@@ -24,8 +23,6 @@ const PORT = 3000;
 const app = express();
 
 app.use(bodyParser.json());
-
-
 app.use(cookieParser());
 
 app.post('/signup', celebrate({

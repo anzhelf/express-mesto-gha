@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports = (req, res, next) => {
-
   let payload;
 
   try {
@@ -13,5 +11,5 @@ module.exports = (req, res, next) => {
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
-  return next();
+  next();
 };
