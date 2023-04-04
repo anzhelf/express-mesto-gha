@@ -15,7 +15,7 @@ const getUsers = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
-  return null;
+  return;
 };
 
 const createUser = async (req, res, next) => {
@@ -37,14 +37,14 @@ const createUser = async (req, res, next) => {
   } catch (e) {
     if (e.code === 11000) {
       next(new ConflictError('Пользователь с таким email уже существует.'));
-      return null;
+      return;
     }
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные при создании.'));
-      return null;
+      return;
     }
     next(e);
-    return null;
+    return;
   }
 };
 
@@ -62,10 +62,10 @@ const getUser = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'CastError') {
       next(new BadReqestError('Передан некорректный id.'));
-      return null;
+      return;
     }
     next(e);
-    return null;
+    return;
   }
 };
 
@@ -77,10 +77,10 @@ const updateUser = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные для изменения информации.'));
-      return null;
+      return;
     }
     next(e);
-    return null;
+    return;
   }
 };
 
@@ -92,10 +92,10 @@ const updateAvatar = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные для изменения фотографии профиля.'));
-      return null;
+      return;
     }
     next(e);
-    return null;
+    return;
   }
 };
 
@@ -128,10 +128,10 @@ const login = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные при создании.'));
-      return null;
+      return;
     }
     next(e);
-    return null;
+    return;
   }
 };
 
@@ -144,7 +144,7 @@ const getMe = async (req, res, next) => {
     return res.status(200).send(user);
   } catch (e) {
     next(e);
-    return null;
+    return;
   }
 };
 

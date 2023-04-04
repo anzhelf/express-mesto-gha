@@ -11,7 +11,6 @@ const getCards = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
-  return null;
 };
 
 const createCard = async (req, res, next) => {
@@ -24,11 +23,10 @@ const createCard = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'ValidationError') {
       next(new BadReqestError('Переданы некорректные данные при создании карточки.'));
-      return null;
+      return;
     }
     next(e);
   }
-  return null;
 };
 
 const deleteCard = async (req, res, next) => {
@@ -52,11 +50,10 @@ const deleteCard = async (req, res, next) => {
   } catch (e) {
     if (e.name === 'CastError') {
       next(new BadReqestError('Передан некорректный id карточки.'));
-      return null;
+      return;
     }
     next(e);
   }
-  return null;
 };
 
 const updateLike = async (req, res, method, next) => {
@@ -77,11 +74,10 @@ const updateLike = async (req, res, method, next) => {
   } catch (e) {
     if (e.name === 'CastError') {
       next(new BadReqestError('Передан некорректный id карточки.'));
-      return null;
+      return;
     }
     next(e);
   }
-  return null;
 };
 
 const likeCard = (req, res) => updateLike(req, res, '$addToSet');
