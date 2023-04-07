@@ -9,7 +9,7 @@ const getCards = async (req, res, next) => {
     const cards = await Card.find({});
     return res.json(cards);
   } catch (e) {
-    next(e);
+    return next(e);
   }
 };
 
@@ -22,10 +22,9 @@ const createCard = async (req, res, next) => {
     return res.status(CodeSucces.CREATED).json(card);
   } catch (e) {
     if (e.name === 'ValidationError') {
-      next(new BadReqestError('Переданы некорректные данные при создании карточки.'));
-      return;
+      return next(new BadReqestError('Переданы некорректные данные при создании карточки.'));
     }
-    next(e);
+    return next(e);
   }
 };
 
@@ -49,10 +48,9 @@ const deleteCard = async (req, res, next) => {
     return res.send({ message: `Карточка ${cardId} удалена.` });
   } catch (e) {
     if (e.name === 'CastError') {
-      next(new BadReqestError('Передан некорректный id карточки.'));
-      return;
+      return next(new BadReqestError('Передан некорректный id карточки.'));
     }
-    next(e);
+    return next(e);
   }
 };
 
@@ -73,10 +71,9 @@ const updateLike = async (req, res, method, next) => {
     return res.send({ likes: card.likes });
   } catch (e) {
     if (e.name === 'CastError') {
-      next(new BadReqestError('Передан некорректный id карточки.'));
-      return;
+      return next(new BadReqestError('Передан некорректный id карточки.'));
     }
-    next(e);
+    return next(e);
   }
 };
 

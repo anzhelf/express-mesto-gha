@@ -13,9 +13,8 @@ const getUsers = async (req, res, next) => {
     const users = await User.find({});
     return res.json(users);
   } catch (e) {
-    next(e);
+    return next(e);
   }
-  return;
 };
 
 const createUser = async (req, res, next) => {
@@ -36,15 +35,12 @@ const createUser = async (req, res, next) => {
     });
   } catch (e) {
     if (e.code === 11000) {
-      next(new ConflictError('Пользователь с таким email уже существует.'));
-      return;
+      return next(new ConflictError('Пользователь с таким email уже существует.'));
     }
     if (e.name === 'ValidationError') {
-      next(new BadReqestError('Переданы некорректные данные при создании.'));
-      return;
+      return next(new BadReqestError('Переданы некорректные данные при создании.'));
     }
-    next(e);
-    return;
+    return next(e);
   }
 };
 
@@ -61,11 +57,9 @@ const getUser = async (req, res, next) => {
     return res.json(user);
   } catch (e) {
     if (e.name === 'CastError') {
-      next(new BadReqestError('Передан некорректный id.'));
-      return;
+      return next(new BadReqestError('Передан некорректный id.'));
     }
-    next(e);
-    return;
+    return next(e);
   }
 };
 
@@ -76,11 +70,9 @@ const updateUser = async (req, res, next) => {
     return res.json({ name, about });
   } catch (e) {
     if (e.name === 'ValidationError') {
-      next(new BadReqestError('Переданы некорректные данные для изменения информации.'));
-      return;
+      return next(new BadReqestError('Переданы некорректные данные для изменения информации.'));
     }
-    next(e);
-    return;
+    return next(e);
   }
 };
 
@@ -91,11 +83,9 @@ const updateAvatar = async (req, res, next) => {
     return res.json({ avatar });
   } catch (e) {
     if (e.name === 'ValidationError') {
-      next(new BadReqestError('Переданы некорректные данные для изменения фотографии профиля.'));
-      return;
+      return next(new BadReqestError('Переданы некорректные данные для изменения фотографии профиля.'));
     }
-    next(e);
-    return;
+    return next(e);
   }
 };
 
@@ -127,11 +117,9 @@ const login = async (req, res, next) => {
     }).send({ message: `Этот токен безопасно сохранен в httpOnly куку: ${token}` });
   } catch (e) {
     if (e.name === 'ValidationError') {
-      next(new BadReqestError('Переданы некорректные данные при создании.'));
-      return;
+      return next(new BadReqestError('Переданы некорректные данные при создании.'));
     }
-    next(e);
-    return;
+    return next(e);
   }
 };
 
@@ -143,8 +131,7 @@ const getMe = async (req, res, next) => {
     }
     return res.status(200).send(user);
   } catch (e) {
-    next(e);
-    return;
+    return next(e);
   }
 };
 
