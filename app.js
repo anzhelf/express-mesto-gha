@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
 const { url } = require('./utils/regularExpressions');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const auth = require('./middlewares/auth');
 const users = require('./routes/users');
 const cards = require('./routes/cards');
@@ -24,6 +25,8 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+app.use(requestLogger);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -50,6 +53,9 @@ app.use('/cards', cards);
 // app.use('/', router);
 
 app.use('*', (req, res, next) => next(new NotFoundError('Страница не существует.')));
+
+//логирование
+app.use(errorLogger);
 
 // обработчик ошибок celebrate
 app.use(errors());
